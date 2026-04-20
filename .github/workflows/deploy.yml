@@ -19,6 +19,8 @@ jobs:
           username: inka-web.dk
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /sorenpetersen.dk/
+          protocol: ftps
+          port: 21
           exclude: |
             **/.git*
             **/.git*/**
