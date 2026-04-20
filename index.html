@@ -447,7 +447,7 @@
         transparent 100%
       );
       pointer-events: none;
-      z-index: 1;
+      z-index: 0;
     }
 
     /* Animated glow on line */
@@ -459,7 +459,7 @@
       height: 1px;
       background: linear-gradient(90deg, transparent, rgba(232,200,75,.9), transparent);
       pointer-events: none;
-      z-index: 2;
+      z-index: 0;
       animation: lineGlow 8s ease-in-out infinite;
     }
     @keyframes lineGlow {
@@ -501,6 +501,12 @@
     }
     .cv-card.below:hover {
       transform: translateY(85px);
+    }
+
+    .inka-ghost {
+      opacity: 0.35;
+      pointer-events: none;
+      transition: none !important;
     }
 
     /* Connector */
@@ -1695,6 +1701,16 @@ function setupInkaFloat() {
   const lastCard = document.querySelector('[data-screen-label="CV 2026"]');
   const sd = window.scrollDist || 0;
   if (!inkaCard || !lastCard || !sd) return;
+
+  if (!document.getElementById('inka-card-ghost')) {
+    const ghost = inkaCard.cloneNode(true);
+    ghost.id = 'inka-card-ghost';
+    ghost.classList.add('inka-ghost');
+    const negMargin = -(inkaCard.offsetWidth + parseFloat(getComputedStyle(inkaCard).marginRight));
+    ghost.style.marginRight = negMargin + 'px';
+    inkaCard.parentNode.insertBefore(ghost, inkaCard);
+  }
+
   window.inkaFloatData = {
     startProgress: Math.max(0, (inkaCard.offsetLeft - Math.min(window.innerWidth, 1600) * 0.55) / sd),
     deltaX: lastCard.offsetLeft - inkaCard.offsetLeft,
