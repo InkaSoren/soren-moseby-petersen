@@ -13,14 +13,16 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Upload via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: linux166.unoeuro.com
-          username: inka-web.dk
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /sorenpetersen.dk/
-          protocol: ftps
-          port: 21
-          exclude: |
-            **/.git*
-            **/.git*/**
+        run: |
+          sudo apt-get install -y lftp
+          lftp -e "
+            set ftp:passive-mode yes;
+            set ssl:verify-certificate no;
+            set ftp:ssl-allow yes;
+            open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' linux166.unoeuro.com;
+            mirror -R --delete --parallel=4 \
+              --exclude .git/ \
+              --exclude .github/ \
+              . /sorenpetersen.dk/;
+            quit
+          "
