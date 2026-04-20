@@ -1,0 +1,23 @@
+name: Deploy til sorenpetersen.dk
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: linux166.unoeuro.com
+          username: inka-web.dk
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /sorenpetersen.dk/
+          exclude: |
+            **/.git*
+            **/.git*/**
