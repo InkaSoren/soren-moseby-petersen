@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Søren Moseby Petersen – Technical Project Manager</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:    #C8973A;
+      --gold2:   #E8C84B;
+      --dark:    #080E1A;
+      --panel:   #0D1525;
+      --glass:   rgba(255,255,255,0.04);
+      --border:  rgba(200,151,58,0.18);
+      --light:   #F2EFE9;
+      --muted:   #7A8BA8;
+      --grad:    linear-gradient(135deg, #C8973A 0%, #E8C84B 100%);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--dark);
+      color: var(--light);
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS BACKGROUND ─────────────────────────────── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NAVBAR ─────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.8rem 3.5rem;
+      background: rgba(8,14,26,0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(200,151,58,0.1);
+      transition: background .3s;
+    }
+
+    nav.scrolled {
+      background: rgba(8,14,26,0.95);
+      border-bottom-color: rgba(200,151,58,0.18);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: .03em;
+    }
+    .logo span {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    nav ul { list-style: none; display: flex; gap: 2.8rem; }
+    nav a  {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .95rem;
+      font-weight: 500;
+      letter-spacing: .02em;
+      transition: color .2s;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px; left: 0; right: 0;
+      height: 1px;
+      background: var(--grad);
+      transform: scaleX(0);
+      transition: transform .3s cubic-bezier(0.25,1,0.5,1);
+      transform-origin: left;
+    }
+    nav a:hover { color: var(--light); }
+    nav a:hover::after { transform: scaleX(1); }
+
+    /* ── HERO ───────────────────────────────────────────── */
+    #om-mig {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 2rem 5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-inner {
+      max-width: 1000px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    /* Avatar */
+    .avatar-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .avatar-glow {
+      position: absolute;
+      inset: -40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,151,58,.25) 0%, transparent 70%);
+      animation: glowPulse 4s ease-in-out infinite;
+    }
+    @keyframes glowPulse {
+      0%,100% { opacity: .6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+
+    .avatar {
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a2a45 0%, #0d1525 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* SVG orbit rings */
+    .avatar-orbits {
+      position: absolute;
+      inset: -50px;
+      width: calc(100% + 100px);
+      height: calc(100% + 100px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .orbit-path {
+      fill: none;
+      stroke-dasharray: 4 8;
+    }
+
+    .orbit-dot {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    /* Status badge */
+    .status-badge {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .4rem .9rem;
+      border-radius: 999px;
+      background: rgba(8,14,26,0.9);
+      border: 1px solid rgba(200,151,58,.3);
+      font-size: .72rem;
+      font-weight: 600;
+      color: rgb(62, 147, 200);
+      letter-spacing: .06em;
+      white-space: nowrap;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100%{opacity:1} 50%{opacity:.3}
+    }
+
+    /* Hero text */
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .3rem .9rem;
+      border-radius: 999px;
+      background: rgba(200,151,58,.1);
+      border: 1px solid rgba(200,151,58,.25);
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--gold2);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 1.3rem;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2.6rem,5vw,4rem);
+      font-weight: 700;
+      line-height: 1.08;
+      margin-bottom: 0.2rem;
+      letter-spacing: -.02em;
+    }
+
+    .hero-text h1 .serif {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-divider {
+      width: 40px; height: 2px;
+      background: var(--grad);
+      border-radius: 999px;
+      margin: 1.4rem 0;
+    }
+
+    .bio {
+      font-size: .96rem;
+      line-height: 1.9;
+      color: var(--muted);
+      margin-bottom: 2.2rem;
+      max-width: 480px;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: .55rem; }
+    .chip {
+      padding: .35rem .85rem;
+      border-radius: 8px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: .77rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: .02em;
+      transition: all .2s;
+    }
+    .chip:hover {
+      border-color: rgba(200,151,58,.4);
+      color: var(--light);
+      background: rgba(200,151,58,.06);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .6rem;
+      color: var(--muted);
+      font-size: .74rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .scroll-mouse {
+      width: 22px; height: 36px;
+      border: 2px solid rgba(200,151,58,.3);
+      border-radius: 11px;
+      display: flex;
+      justify-content: center;
+      padding-top: 6px;
+    }
+    .scroll-mouse::before {
+      content:'';
+      width: 3px; height: 7px;
+      background: var(--gold);
+      border-radius: 999px;
+      animation: scrollDown 2s ease-in-out infinite;
+    }
+    @keyframes scrollDown {
+      0% { opacity:1; transform:translateY(0); }
+      100% { opacity:0; transform:translateY(10px); }
+    }
+
+    /* ── STATS ROW ──────────────────────────────────────── */
+    .stats-row {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto -3rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.06);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .stat-item {
+      background: var(--panel);
+      padding: 2.2rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--grad);
+      transform: scaleX(0);
+      transition: transform .5s ease;
+    }
+    .stat-item:hover::before { transform: scaleX(1); }
+
+    .stat-num {
+      font-size: 2.6rem;
+      font-weight: 700;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: .4rem;
+    }
+    .stat-label {
+      font-size: .8rem;
+      color: var(--muted);
+      letter-spacing: .04em;
+    }
+
+    /* ── CV SECTION ─────────────────────────────────────── */
+    #cv {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cv-sticky-wrapper {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      background: var(--dark);
+    }
+
+    .cv-clip {
+      position: relative;
+      width: 100%;
+      max-width: 1600px;
+      height: 100%;
+      margin: 0 auto;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .cv-clip::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 200px;
+      background: linear-gradient(to right, transparent, var(--dark));
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .cv-sticky-wrapper::before,
+    .cv-sticky-wrapper::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 100px;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .cv-sticky-wrapper::before {
+      top: 0;
+      background: linear-gradient(to bottom, var(--dark), transparent);
+    }
+    .cv-sticky-wrapper::after {
+      bottom: 0;
+      background: linear-gradient(to top, var(--dark), transparent);
+    }
+
+    .cv-header {
+      position: absolute;
+      top: 2.4rem; left: 3.5rem;
+      z-index: 10;
+    }
+    .cv-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .cv-header h2 .serif {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cv-header p {
+      color: var(--muted);
+      font-size: .82rem;
+      margin-top: .35rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      letter-spacing: .04em;
+    }
+
+    /* Timeline */
+    .timeline-line {
+      position: absolute;
+      top: 50%;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(200,151,58,.2) 5%,
+        rgba(200,151,58,.4) 50%,
+        rgba(232,200,75,.2) 95%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Animated glow on line */
+    .timeline-glow {
+      position: absolute;
+      top: 50%;
+      left: -200px;
+      width: 200px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(232,200,75,.9), transparent);
+      pointer-events: none;
+      z-index: 2;
+      animation: lineGlow 8s ease-in-out infinite;
+    }
+    @keyframes lineGlow {
+      0%   { left: -200px; }
+      100% { left: 110%; }
+    }
+
+    .cv-track {
+      display: flex;
+      align-items: center;
+      will-change: transform;
+      padding: 0 8vw;
+    }
+
+    .cv-card {
+      flex-shrink: 0;
+      width: 290px;
+      margin: 0 1.4rem;
+      background: rgba(13,21,37,0.9);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px;
+      padding: 1.6rem 1.8rem;
+      position: relative;
+      transition: all .35s cubic-bezier(0.25,1,0.5,1);
+      transform: translateY(-75px);
+    }
+    .cv-card.below {
+      transform: translateY(75px);
+    }
+
+    .cv-card:hover {
+      border-color: rgba(200,151,58,.5);
+      box-shadow:
+        0 0 0 1px rgba(200,151,58,.1),
+        0 20px 60px rgba(0,0,0,.4),
+        0 0 40px rgba(200,151,58,.12);
+      transform: translateY(-85px);
+    }
+    .cv-card.below:hover {
+      transform: translateY(85px);
+    }
+
+    /* Connector */
+    .cv-card::after {
+      content: '';
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      width: 1px; height: 35px;
+      background: linear-gradient(to bottom, rgba(200,151,58,.3), transparent);
+      bottom: -35px;
+    }
+    .cv-card.below::after {
+      bottom: auto; top: -35px;
+      background: linear-gradient(to top, rgba(200,151,58,.3), transparent);
+    }
+
+    /* Timeline dot */
+    .cv-card::before {
+      content: '';
+      position: absolute;
+      bottom: calc(-35px - 6px);
+      left: 50%; transform: translateX(-50%);
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--grad);
+      box-shadow: 0 0 12px rgba(200,151,58,.8), 0 0 24px rgba(232,200,75,.3);
+      z-index: 2;
+    }
+    .cv-card.below::before {
+      bottom: auto;
+      top: calc(-35px - 6px);
+    }
+
+    .cv-card-type {
+      position: absolute;
+      top: 1.3rem; right: 1.3rem;
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cv-card-type.edu { background: rgba(200,151,58,.12); }
+    .cv-card-type.work { background: rgba(96,165,250,.1); }
+
+    .cv-card .year {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .45rem;
+    }
+
+    .cv-card .place {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: .3rem;
+      font-weight: 400;
+    }
+
+    .cv-card h3 {
+      font-size: .97rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--light);
+      margin-bottom: .6rem;
+      padding-right: 2rem;
+    }
+
+    .cv-card p {
+      font-size: .8rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .cv-card .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      margin-top: 1rem;
+      padding: .2rem .65rem;
+      border-radius: 6px;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+    .tag-edu  { background: rgba(200,151,58,.1); color: #E8C84B; border: 1px solid rgba(200,151,58,.2); }
+    .tag-work { background: rgba(96,165,250,.1);  color: #93C5FD; border: 1px solid rgba(96,165,250,.2); }
+
+    /* Progress */
+    .cv-progress {
+      position: absolute;
+      bottom: 1.8rem; left: 8vw; right: 8vw;
+      height: 1px;
+      background: rgba(255,255,255,.06);
+      border-radius: 999px;
+      overflow: visible;
+      z-index: 10;
+    }
+    .cv-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--grad);
+      border-radius: 999px;
+      transition: width .08s linear;
+      position: relative;
+    }
+    .cv-progress-bar::after {
+      content: '';
+      position: absolute;
+      right: -4px; top: -4px;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--gold2);
+      box-shadow: 0 0 10px rgba(232,200,75,.8);
+    }
+
+    /* ── SKILLS SECTION ─────────────────────────────────── */
+    #kompetencer {
+      position: relative;
+      z-index: 1;
+      padding: 8rem 2rem;
+    }
+
+    .section-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 3.5rem;
+    }
+    .section-title .serif {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .skill-card {
+      background: rgba(13,21,37,0.8);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px;
+      padding: 1.8rem;
+      transition: all .3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--grad);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .skill-card:hover {
+      border-color: rgba(200,151,58,.35);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(0,0,0,.3);
+    }
+    .skill-card:hover::before { opacity: .04; }
+
+    .skill-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(200,151,58,.1);
+      border: 1px solid rgba(200,151,58,.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+      color: var(--gold);
+      position: relative;
+    }
+
+    .skill-card h4 {
+      font-size: .97rem;
+      font-weight: 600;
+      margin-bottom: .6rem;
+      position: relative;
+    }
+
+    .skill-card p {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .skill-bar-wrap {
+      margin-top: 1.2rem;
+      position: relative;
+    }
+    .skill-bar-track {
+      height: 3px;
+      background: rgba(255,255,255,.06);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%;
+      background: var(--grad);
+      border-radius: 999px;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 1.2s cubic-bezier(0.25,1,0.5,1);
+    }
+    .skill-bar-fill.animated { transform: scaleX(1); }
+
+    /* ── CONTACT ─────────────────────────────────────────── */
+    #kontakt {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 8rem 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-inner {
+      max-width: 580px;
+    }
+
+    .contact-inner .section-eyebrow { margin-bottom: 1rem; }
+
+    #kontakt h2 {
+      font-size: clamp(2rem,4vw,3.2rem);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 1rem;
+      line-height: 1.15;
+    }
+
+    #kontakt p {
+      color: var(--muted);
+      line-height: 1.85;
+      margin-bottom: 3rem;
+      font-size: .95rem;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .9rem 1.8rem;
+      border-radius: 12px;
+      background: rgba(13,21,37,0.8);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--light);
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 600;
+      transition: all .25s;
+    }
+    .contact-link:hover {
+      border-color: rgba(200,151,58,.45);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.3);
+    }
+    .contact-link.primary {
+      background: linear-gradient(135deg, #C8973A, #E8C84B);
+      border-color: transparent;
+      color: #08121e;
+    }
+    .contact-link.primary:hover {
+      box-shadow: 0 10px 40px rgba(200,151,58,.4);
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: rgba(122,139,168,.5);
+      font-size: .76rem;
+      border-top: 1px solid rgba(255,255,255,.04);
+      position: relative;
+      z-index: 1;
+      letter-spacing: .04em;
+    }
+
+    /* ── INKA ARC ───────────────────────────────────────── */
+    .cv-track { position: relative; }
+
+    #inka-arc-wrap {
+      position: absolute;
+      top: 50%;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 3;
+    }
+
+    #inka-arc-svg { overflow: visible; display: block; }
+
+    #arc-path {
+      stroke-dasharray: 10 7;
+      animation: arcFlow 1.5s linear infinite;
+    }
+
+    @keyframes arcFlow {
+      from { stroke-dashoffset: 0; }
+      to   { stroke-dashoffset: -34; }
+    }
+
+    .arc-ring {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: arcRingPulse 2s ease-out infinite;
+    }
+    @keyframes arcRingPulse {
+      0%   { transform: scale(0.4); opacity: .8; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    #arc-today-label {
+      position: absolute;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      top: -52px;
+    }
+    #arc-today-label span {
+      padding: .28rem .75rem;
+      border-radius: 999px;
+      background: rgba(13,21,37,.96);
+      border: 1px solid rgba(232,200,75,.45);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--gold2);
+      white-space: nowrap;
+      box-shadow: 0 0 14px rgba(232,200,75,.2);
+      animation: todayPulse 2.5s ease-in-out infinite;
+    }
+    #arc-today-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--gold2);
+      box-shadow: 0 0 10px rgba(232,200,75,.7);
+      animation: todayPulse 2.5s ease-in-out infinite;
+    }
+
+    /* ── OLD classes kept to avoid errors ───────────────── */
+    .cv-today-track {
+      flex-shrink: 0;
+      width: 220px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .cv-today-line {
+      position: absolute;
+      top: 50%;
+      left: -30px;
+      width: calc(100% + 10px);
+      height: 2px;
+      transform: translateY(-50%);
+      background: linear-gradient(90deg, rgba(200,151,58,.0), rgba(200,151,58,.5) 20%, rgba(232,200,75,.8));
+      background-size: 200% 100%;
+      animation: lineMarch 1.8s linear infinite;
+    }
+
+    /* dashed moving effect */
+    .cv-today-line::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 8px,
+        rgba(8,14,26,1) 8px,
+        rgba(8,14,26,1) 14px
+      );
+      animation: dashMove 1.2s linear infinite;
+    }
+
+    @keyframes dashMove {
+      from { background-position: 0 0; }
+      to   { background-position: 22px 0; }
+    }
+
+    /* arrowhead */
+    .cv-today-line::after {
+      content: '';
+      position: absolute;
+      right: -1px; top: 50%;
+      transform: translateY(-50%);
+      border-left: 10px solid var(--gold2);
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      filter: drop-shadow(0 0 6px rgba(232,200,75,.8));
+    }
+
+    .cv-today-label {
+      position: absolute;
+      right: -8px;
+      top: calc(50% - 46px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+    }
+
+    .cv-today-label span {
+      padding: .3rem .75rem;
+      border-radius: 999px;
+      background: rgba(13,21,37,0.95);
+      border: 1px solid rgba(232,200,75,.4);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--gold2);
+      white-space: nowrap;
+      box-shadow: 0 0 16px rgba(232,200,75,.2);
+      animation: todayPulse 2.5s ease-in-out infinite;
+    }
+
+    .cv-today-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--gold2);
+      box-shadow: 0 0 0 4px rgba(232,200,75,.15), 0 0 16px rgba(232,200,75,.6);
+      animation: todayPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes todayPulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .7; transform: scale(.88); }
+    }
+
+    /* ── REVEAL ─────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── TWEAKS ─────────────────────────────────────────── */
+    #tweaks-panel {
+      display: none;
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      width: 260px;
+      background: rgba(13,21,37,0.97);
+      border: 1px solid rgba(200,151,58,.2);
+      border-radius: 16px;
+      padding: 1.4rem;
+      z-index: 999;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    }
+
+    #tweaks-panel h4 {
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .tweak-row {
+      margin-bottom: 1.2rem;
+    }
+
+    .tweak-row label {
+      display: block;
+      font-size: .75rem;
+      color: var(--muted);
+      margin-bottom: .4rem;
+      letter-spacing: .04em;
+    }
+
+    .tweak-row select,
+    .tweak-row input[type=range] {
+      width: 100%;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 6px;
+      color: var(--light);
+      font-family: inherit;
+      font-size: .8rem;
+      padding: .4rem .6rem;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
+
+    .tweak-swatch-row {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+
+    .tweak-swatch {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color .2s;
+    }
+    .tweak-swatch.active { border-color: var(--light); }
+
+    /* ── HAMBURGER ──────────────────────────────────────── */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: .4rem;
+      z-index: 102;
+    }
+    .bar {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--light);
+      border-radius: 999px;
+      transition: transform .35s cubic-bezier(0.25,1,0.5,1), opacity .25s;
+    }
+    nav.open .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    nav.open .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    nav.open .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 780px) {
+      .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 3rem; }
+      .avatar-wrap { justify-content: center; }
+      .chips, .hero-divider { margin-left: auto; margin-right: auto; }
+      .chips { justify-content: center; }
+      .stats-row { grid-template-columns: 1fr; margin: 0 1rem; }
+      .cv-header { left: 1.5rem; }
+      .skills-grid { grid-template-columns: 1fr; }
+
+      nav { padding: 1rem 1.5rem; }
+      .nav-toggle { display: flex; }
+
+      nav ul {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        flex-direction: column;
+        gap: 0;
+        padding: 5.5rem 2rem 2rem;
+        background: rgba(8,14,26,0.97);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--border);
+        transform: translateY(-110%);
+        transition: transform .4s cubic-bezier(0.25,1,0.5,1);
+        z-index: 101;
+      }
+      nav.open ul { transform: translateY(0); }
+
+      nav ul li { border-bottom: 1px solid rgba(255,255,255,.06); }
+      nav ul li:last-child { border-bottom: none; }
+      nav a {
+        display: block;
+        padding: 1rem 0;
+        font-size: 1rem;
+        color: var(--light);
+      }
+      nav a::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CANVAS BG -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="logo">Søren Moseby <span>Petersen</span></div>
+  <ul>
+    <li><a href="#om-mig">Om mig</a></li>
+    <li><a href="#cv">CV</a></li>
+    <li><a href="#kompetencer">Kompetencer</a></li>
+    <li><a href="#kontakt">Kontakt</a></li>
+  </ul>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Åbn menu">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
+</nav>
+
+<!-- OM MIG -->
+<section id="om-mig">
+  <div class="hero-inner">
+
+    <div class="avatar-wrap reveal">
+      <div class="avatar-glow"></div>
+      <div class="avatar" id="avatar-el">
+        <img src="uploads/Soren-sort-hvid.png" alt="Søren Moseby Petersen"
+          onerror="this.style.display='none'; this.parentNode.innerHTML += '<svg width=110 height=110 viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'rgba(200,151,58,.4)\' stroke-width=\'1\'><circle cx=\'12\' cy=\'8\' r=\'4\'/><path d=\'M4 20c0-4 3.6-7 8-7s8 3 8 7\'/></svg>'">
+      </div>
+
+      <!-- SVG orbit rings -->
+      <svg class="avatar-orbits" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+        <ellipse class="orbit-path" cx="180" cy="180" rx="155" ry="155"
+          stroke="rgba(200,151,58,.18)" stroke-width="1">
+          <animateTransform attributeName="transform" type="rotate"
+            from="0 180 180" to="360 180 180" dur="28s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse class="orbit-path" cx="180" cy="180" rx="155" ry="155"
+          stroke="rgba(200,151,58,.0)" stroke-width="1">
+          <animateTransform attributeName="transform" type="rotate"
+            from="0 180 180" to="360 180 180" dur="28s" repeatCount="indefinite"/>
+        </ellipse>
+        <!-- Dot on first orbit -->
+        <circle r="5" fill="#E8C84B" filter="url(#glow)">
+          <animateMotion dur="28s" repeatCount="indefinite">
+            <mpath href="#orbit1"/>
+          </animateMotion>
+        </circle>
+        <path id="orbit1" d="M 335 180 A 155 155 0 1 1 334.9999 179.9" fill="none"/>
+
+        <ellipse class="orbit-path" cx="180" cy="180" rx="172" ry="172"
+          stroke="rgba(232,200,75,.1)" stroke-dasharray="3 12" stroke-width="1">
+          <animateTransform attributeName="transform" type="rotate"
+            from="360 180 180" to="0 180 180" dur="44s" repeatCount="indefinite"/>
+        </ellipse>
+
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+      </svg>
+
+    </div>
+
+    <div class="hero-text reveal" style="transition-delay:.15s">
+      <div class="hero-tag">Technical Project Manager</div>
+      <h1>Søren Moseby<br><span class="serif">Petersen</span></h1>
+      <div class="hero-divider"></div>
+      <p class="bio">
+        Erfaren teknisk leder med 25+ års baggrund inden for teknisk design,
+        produktudvikling og fremstilling. Ledelse af tekniske teams, styring af
+        komplekse projekter og forretningsudvikling.<br><br>
+        +10 års erfaring med udvikling af websites, web-apps, samt opsætning og
+        drift af online markedsføring.
+      </p>
+      <div class="chips">
+        <span class="chip">Project Management</span>
+        <span class="chip">SolidWorks & CAD</span>
+        <span class="chip">Product Development</span>
+        <span class="chip">Automation</span>
+        <span class="chip">R&D</span>
+        <span class="chip">Technical Leadership</span>
+        <span class="chip">IPMA</span>
+        <span class="chip">Webdesign</span>
+        <span class="chip">Online Marketing</span>
+        <span class="chip">Webapp design</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-mouse"></div>
+    Scroll ned
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row reveal" style="padding:0 2rem; max-width:960px; margin: 0 auto 5rem;">
+  <div class="stat-item">
+    <div class="stat-num" id="stat-years">30+</div>
+    <div class="stat-label">Års erfaring</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">IPMA</div>
+    <div class="stat-label">Certificeret projektleder</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">2018</div>
+    <div class="stat-label">Stifter af Inka Web ApS</div>
+  </div>
+</div>
+
+<!-- CV -->
+<div id="cv" style="margin-top: 5rem;">
+  <div class="cv-sticky-wrapper" id="cv-sticky">
+  <div class="cv-clip">
+
+    <div class="cv-header">
+      <h2>Mit <span class="serif">CV</span></h2>
+      <p>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+        Scroll for at navigere tidslinjen
+      </p>
+    </div>
+
+    <div class="timeline-line"></div>
+    <div class="timeline-glow"></div>
+
+    <div class="cv-track" id="cv-track">
+
+      <div class="cv-card below" data-screen-label="CV 1996">
+        <div class="cv-card-type edu">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8C84B" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <div class="year">1995 – 1999</div>
+        <div class="place">Frederikshavn Tekniske Skole</div>
+        <h3>Auto Mekaniker</h3>
+        <p>Faglig grunduddannelse som auto mekaniker.</p>
+        <span class="tag tag-edu">Uddannelse</span>
+      </div>
+
+      <div class="cv-card" data-screen-label="CV 2000">
+        <div class="cv-card-type edu">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8C84B" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <div class="year">2000 – 2001</div>
+        <div class="place">Nordjyllands Erhvervsakademi</div>
+        <h3>Maskintekniker</h3>
+        <p>Videreuddannelse inden for maskinteknik og produktion.</p>
+        <span class="tag tag-edu">Uddannelse</span>
+      </div>
+
+      <div class="cv-card below" data-screen-label="CV 2001-Scanfiber">
+        <div class="cv-card-type work">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <div class="year">Maj – Sep 2001</div>
+        <div class="place">Scanfiber A/S</div>
+        <h3>Engineer</h3>
+        <p>Første ingeniørstilling med fokus på teknisk løsning og produktion.</p>
+        <span class="tag tag-work">Erfaring</span>
+      </div>
+
+      <div class="cv-card" data-screen-label="CV 2001-Roblon">
+        <div class="cv-card-type work">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <div class="year">2001 – 2017</div>
+        <div class="place">Roblon A/S, Sæby</div>
+        <h3>Design Engineer</h3>
+        <p>15 år som design ingeniør med ansvar for produktudvikling, CAD og engineering.</p>
+        <span class="tag tag-work">Erfaring</span>
+      </div>
+
+      <div class="cv-card below" data-screen-label="CV 2012-IPMA">
+        <div class="cv-card-type edu">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8C84B" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <div class="year">2012 – 2013</div>
+        <div class="place">UCN</div>
+        <h3>Project Management – IPMA</h3>
+        <p>Certificeret projektleder (IPMA) med fokus på struktureret projektledelse.</p>
+        <span class="tag tag-edu">Uddannelse</span>
+      </div>
+
+      <div class="cv-card" data-screen-label="CV 2013-Webshop">
+        <div class="cv-card-type work">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </div>
+        <div class="year">2013 – 2022</div>
+        <div class="place">Iværksætter</div>
+        <h3>Ecommerce</h3>
+        <p>Udvikling og drift af Hubshop.dk og WiFi-butikken.dk.</p>
+        <span class="tag tag-work">Erfaring</span>
+      </div>
+
+      <div class="cv-card below" data-screen-label="CV 2017">
+        <div class="cv-card-type work">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <div class="year">2017 – 2018</div>
+        <div class="place">Roblon A/S, Sæby</div>
+        <h3>Customer Service Manager</h3>
+        <p>Ledelse af kundeservice og styrkelse af kundeoplevelsen i en international virksomhed.</p>
+        <span class="tag tag-work">Erfaring</span>
+      </div>
+
+      <div class="cv-card" id="inka-card" data-screen-label="CV 2018-Inka">
+        <div class="cv-card-type work">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <div class="year">2018 – <span style="background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700;">Nu</span></div>
+        <div class="place">Inka Web ApS, Sæby</div>
+        <h3>Indehaver</h3>
+        <p>Stifter og ejer af eget selskab med fokus på web- og app-udvikling, samt online markedsføring.</p>
+        <div style="display:flex;align-items:center;gap:.5rem;margin-top:.9rem;">
+          <span style="display:flex;align-items:center;gap:.35rem;padding:.25rem .7rem;border-radius:999px;background:rgba(75,232,200,.08);border:1px solid rgba(75,232,200,.25);font-size:.7rem;font-weight:700;letter-spacing:.04em;color:#4BE8C8;">
+            <span style="width:6px;height:6px;border-radius:50%;background:#4BE8C8;box-shadow:0 0 8px #4BE8C8;display:inline-block;animation:blink 2s ease-in-out infinite;"></span>
+            Aktiv rolle
+          </span>
+          <span style="font-size:.7rem;color:var(--muted);">siden 2018</span>
+        </div>
+      </div>
+
+      <div class="cv-card below" data-screen-label="CV 2021-CSM">
+        <div class="cv-card-type work">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <div class="year">Jan – Nov 2021</div>
+        <div class="place">Robco Engineering A/S, Sæby</div>
+        <h3>Customer Service Project Manager</h3>
+        <p>Styring af kundeprojekter og koordinering mellem kunder og tekniske teams.</p>
+        <span class="tag tag-work">Erfaring</span>
+      </div>
+
+      <div class="cv-card" data-screen-label="CV 2021-TM">
+        <div class="cv-card-type work">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <div class="year">2021 – 2026</div>
+        <div class="place">Robco Engineering A/S, Sæby</div>
+        <h3>Technical Manager / Teknisk Chef</h3>
+        <p>Ledelse af R&amp;D team, IT ansvar og strategisk forretningsudvikling.</p>
+        <span class="tag tag-work">Ledelseserfaring</span>
+      </div>
+
+      <div class="cv-card below" data-screen-label="CV 2026">
+        <div class="cv-card-type work">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <div class="year">Marts 2026 – Nu</div>
+        <div class="place">Robco Engineering A/S, Sæby</div>
+        <h3>Technical Project Manager</h3>
+        <p>Ansvarlig for tekniske projekter på tværs af organisationen med fokus på levering og kvalitet.</p>
+        <div style="display:flex;align-items:center;gap:.5rem;margin-top:.9rem;">
+          <span style="display:flex;align-items:center;gap:.35rem;padding:.25rem .7rem;border-radius:999px;background:rgba(75,232,200,.08);border:1px solid rgba(75,232,200,.25);font-size:.7rem;font-weight:700;letter-spacing:.04em;color:#4BE8C8;">
+            <span style="width:6px;height:6px;border-radius:50%;background:#4BE8C8;box-shadow:0 0 8px #4BE8C8;display:inline-block;animation:blink 2s ease-in-out infinite;"></span>
+            Aktiv rolle
+          </span>
+          <span style="font-size:.7rem;color:var(--muted);">siden marts 2026</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="cv-progress">
+      <div class="cv-progress-bar" id="cv-progress-bar"></div>
+    </div>
+
+  </div><!-- /.cv-clip -->
+  </div><!-- /.cv-sticky-wrapper -->
+</div>
+
+<!-- KOMPETENCER -->
+<section id="kompetencer">
+  <div class="section-wrap">
+    <div class="section-eyebrow reveal">Kernekompetencer</div>
+    <h2 class="section-title reveal" style="transition-delay:.1s">Hvad jeg <span class="serif">bidrager med</span></h2>
+    <div class="skills-grid">
+
+      <div class="skill-card reveal" style="transition-delay:.1s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M6 20V10l6-6 6 6v10"/><path d="M10 20v-5h4v5"/></svg>
+        </div>
+        <h4>Projektledelse</h4>
+        <p>IPMA-certificeret projektleder med erfaring i at drive tekniske projekter fra koncept til levering.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.92"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal" style="transition-delay:.2s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        </div>
+        <h4>Teknisk Engineering</h4>
+        <p>25+ års erfaring med SolidWorks, CAD, maskinteknik og produktudvikling i industrien.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.97"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal" style="transition-delay:.3s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h4>Teamledelse</h4>
+        <p>Erfaren leder af tekniske teams med fokus på motivation, faglig udvikling og leverancer.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.88"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal" style="transition-delay:.15s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h4>R&D & Innovation</h4>
+        <p>Drevet R&amp;D-processer og innovation i produktudvikling hos Robco Engineering og Roblon.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.85"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal" style="transition-delay:.25s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <h4>Automation</h4>
+        <p>Dyb forståelse af automatiseringsprocesser og systemintegration i produktionsmiljøer.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.82"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal" style="transition-delay:.35s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <h4>Forretningsudvikling</h4>
+        <p>Erfaring med strategisk forretningsudvikling og kunderelationer i internationale markeder.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.80"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal" style="transition-delay:.4s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+        </div>
+        <h4>Webdesign</h4>
+        <p>Design og udvikling af professionelle websites med fokus på brugeroplevelse og moderne æstetik.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.88"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal" style="transition-delay:.45s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+        </div>
+        <h4>Webapp udvikling</h4>
+        <p>Udvikling af skræddersyede web-applikationer og digitale løsninger til forretningsbehov.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.82"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal" style="transition-delay:.5s">
+        <div class="skill-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h4>Online Marketing</h4>
+        <p>Opsætning og drift af online markedsføring, SEO og digitale kampagner for vækst og synlighed.</p>
+        <div class="skill-bar-wrap"><div class="skill-bar-track"><div class="skill-bar-fill" style="--w:0.85"></div></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section id="kontakt">
+  <div class="contact-inner reveal">
+    <div class="section-eyebrow">Kontakt</div>
+    <h2>Lad os <span class="serif">snakke</span></h2>
+    <p>Er du interesseret i et samarbejde eller vil du høre mere om min baggrund?
+       Tøv ikke med at tage kontakt.</p>
+    <div class="contact-links">
+      <a class="contact-link primary"
+         href="https://www.linkedin.com/in/s%C3%B8ren-petersen-73146965"
+         target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
+          <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+        </svg>
+        LinkedIn
+      </a>
+      <a class="contact-link" href="mailto:soren@inka-web.dk">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        Send e-mail
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Søren Moseby Petersen &nbsp;·&nbsp; Technical Project Manager</p>
+</footer>
+
+<!-- TWEAKS -->
+<div id="tweaks-panel">
+  <h4>Tweaks</h4>
+  <div class="tweak-row">
+    <label>Accent farve</label>
+    <div class="tweak-swatch-row">
+      <div class="tweak-swatch active" style="background:linear-gradient(135deg,#C8973A,#E8C84B)" data-gold="C8973A" data-gold2="E8C84B" onclick="setAccent(this)"></div>
+      <div class="tweak-swatch" style="background:linear-gradient(135deg,#3A7FC8,#4BE8C8)" data-gold="3A7FC8" data-gold2="4BE8C8" onclick="setAccent(this)"></div>
+      <div class="tweak-swatch" style="background:linear-gradient(135deg,#C83A7F,#E84BB8)" data-gold="C83A7F" data-gold2="E84BB8" onclick="setAccent(this)"></div>
+      <div class="tweak-swatch" style="background:linear-gradient(135deg,#3AC87F,#B8E84B)" data-gold="3AC87F" data-gold2="B8E84B" onclick="setAccent(this)"></div>
+    </div>
+  </div>
+  <div class="tweak-row">
+    <label>Partikel tæthed</label>
+    <input type="range" id="particle-density" min="20" max="120" value="60" oninput="updateParticles(this.value)">
+  </div>
+  <div class="tweak-row">
+    <label>Baggrund</label>
+    <select id="bg-mode" onchange="setBg(this.value)">
+      <option value="dark">Mørk (standard)</option>
+      <option value="navy">Dyb navy</option>
+      <option value="charcoal">Kul</option>
+    </select>
+  </div>
+</div>
+
+<script>
+// ── TWEAKS PROTOCOL ─────────────────────────────────────────────────────────
+window.addEventListener('message', e => {
+  if (e.data?.type === '__activate_edit_mode')   document.getElementById('tweaks-panel').style.display = 'block';
+  if (e.data?.type === '__deactivate_edit_mode')  document.getElementById('tweaks-panel').style.display = 'none';
+});
+window.parent.postMessage({type:'__edit_mode_available'},'*');
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentGold": "3A7FC8",
+  "accentGold2": "4BE8C8",
+  "particles": "120",
+  "bgMode": "dark"
+}/*EDITMODE-END*/;
+
+function setAccent(el) {
+  document.querySelectorAll('.tweak-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  const g = el.dataset.gold, g2 = el.dataset.gold2;
+  document.documentElement.style.setProperty('--gold','#'+g);
+  document.documentElement.style.setProperty('--gold2','#'+g2);
+  document.documentElement.style.setProperty('--grad',`linear-gradient(135deg, #${g} 0%, #${g2} 100%)`);
+  window.parent.postMessage({type:'__edit_mode_set_keys',edits:{accentGold:g,accentGold2:g2}},'*');
+}
+
+function setBg(val) {
+  const map = {dark:'#080E1A', navy:'#050D1F', charcoal:'#0F0F0F'};
+  document.documentElement.style.setProperty('--dark', map[val]);
+  window.parent.postMessage({type:'__edit_mode_set_keys',edits:{bgMode:val}},'*');
+}
+
+function updateParticles(val) {
+  PARTICLE_COUNT = parseInt(val);
+  initParticles();
+  window.parent.postMessage({type:'__edit_mode_set_keys',edits:{particles:val}},'*');
+}
+
+// ── CANVAS PARTICLES ─────────────────────────────────────────────────────────
+// ── APPLY SAVED TWEAKS ON LOAD ───────────────────────────────────────────────
+(function applyTweaks() {
+  const g = TWEAK_DEFAULTS.accentGold, g2 = TWEAK_DEFAULTS.accentGold2;
+  document.documentElement.style.setProperty('--gold',  '#' + g);
+  document.documentElement.style.setProperty('--gold2', '#' + g2);
+  document.documentElement.style.setProperty('--grad',  `linear-gradient(135deg, #${g} 0%, #${g2} 100%)`);
+  const bgMap = {dark:'#080E1A', navy:'#050D1F', charcoal:'#0F0F0F'};
+  if (bgMap[TWEAK_DEFAULTS.bgMode]) document.documentElement.style.setProperty('--dark', bgMap[TWEAK_DEFAULTS.bgMode]);
+})();
+
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [], PARTICLE_COUNT = TWEAK_DEFAULTS.particles;
+let mouse = {x: -9999, y: -9999};
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function initParticles() {
+  particles = [];
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - .5) * .35,
+      vy: (Math.random() - .5) * .35,
+      r: Math.random() * 1.5 + .5,
+      alpha: Math.random() * .4 + .1,
+    });
+  }
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Subtle gradient blobs
+  const g1 = ctx.createRadialGradient(W*.1, H*.2, 0, W*.1, H*.2, W*.4);
+  g1.addColorStop(0, 'rgba(26,58,100,0.18)');
+  g1.addColorStop(1, 'transparent');
+  ctx.fillStyle = g1;
+  ctx.fillRect(0,0,W,H);
+
+  const g2 = ctx.createRadialGradient(W*.9, H*.75, 0, W*.9, H*.75, W*.35);
+  g2.addColorStop(0, 'rgba(200,151,58,0.08)');
+  g2.addColorStop(1, 'transparent');
+  ctx.fillStyle = g2;
+  ctx.fillRect(0,0,W,H);
+
+  // Connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 140) {
+        const alpha = (1 - dist/140) * 0.12;
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(200,151,58,${alpha})`;
+        ctx.lineWidth = .6;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Dots
+  particles.forEach(p => {
+    const dx = p.x - mouse.x, dy = p.y - mouse.y;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    const glow = dist < 120 ? 1 - dist/120 : 0;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r + glow*2, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(200,151,58,${p.alpha + glow*.4})`;
+    ctx.fill();
+  });
+}
+
+function updateParticlesPos() {
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0) p.x = W;
+    if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H;
+    if (p.y > H) p.y = 0;
+  });
+}
+
+function animate() {
+  updateParticlesPos();
+  drawParticles();
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+window.addEventListener('resize', () => { resize(); initParticles(); });
+resize(); initParticles(); animate();
+
+// ── NAVBAR SCROLL ────────────────────────────────────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── INKA FLOAT ────────────────────────────────────────────────────────────────
+let inkaFloatData = null;
+window.inkaFloatData = null;
+
+function setupInkaFloat() {
+  const inkaCard = document.getElementById('inka-card');
+  const lastCard = document.querySelector('[data-screen-label="CV 2026"]');
+  const sd = window.scrollDist || 0;
+  if (!inkaCard || !lastCard || !sd) return;
+  window.inkaFloatData = {
+    startProgress: Math.max(0, (inkaCard.offsetLeft - Math.min(window.innerWidth, 1600) * 0.55) / sd),
+    deltaX: lastCard.offsetLeft - inkaCard.offsetLeft,
+  };
+}
+
+// ── HORIZONTAL CV SCROLL ──────────────────────────────────────────────────────
+const cvSection   = document.getElementById('cv');
+const track       = document.getElementById('cv-track');
+const progressBar = document.getElementById('cv-progress-bar');
+let scrollDist = 0;
+
+function setupCV() {
+  const viewW = Math.min(window.innerWidth, 1600);
+  window.scrollDist = track.scrollWidth - viewW;
+  scrollDist = window.scrollDist;
+  cvSection.style.height = `calc(100vh + ${scrollDist}px)`;
+  setupInkaFloat();
+}
+setupCV();
+window.addEventListener('resize', setupCV);
+
+window.addEventListener('scroll', () => {
+  const rel = window.scrollY - cvSection.offsetTop;
+  const progress = Math.max(0, Math.min(1, rel / scrollDist));
+  track.style.transform = `translateX(${-progress * scrollDist}px)`;
+  progressBar.style.width = (progress * 100) + '%';
+
+  // Inka float animation
+  const inkaCard = document.getElementById('inka-card');
+  if (inkaCard && window.inkaFloatData) {
+    const { startProgress, deltaX } = window.inkaFloatData;
+    const raw = (progress - startProgress) / (1 - startProgress);
+    const t   = Math.max(0, Math.min(1, raw));
+    const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    const tx   = ease * deltaX;
+    const ty   = -75 - ease * 80;
+    inkaCard.style.transform  = `translateX(${tx}px) translateY(${ty}px)`;
+    inkaCard.style.zIndex     = t > 0.01 ? '20' : '';
+    inkaCard.style.borderColor = t > 0.01
+      ? `rgba(200,151,58,${0.3 + ease * 0.5})`  : '';
+    inkaCard.style.boxShadow  = t > 0.01
+      ? `0 0 50px rgba(200,151,58,${ease*0.35}), 0 24px 60px rgba(0,0,0,.45)` : '';
+
+    // Mirror: last card drifts down symmetrically
+    const lastCard = document.querySelector('[data-screen-label="CV 2026"]');
+    if (lastCard) {
+      lastCard.style.transform = `translateY(${75 + ease * 80}px)`;
+    }
+  }
+});
+
+window.addEventListener('load', () => { setupCV(); setupInkaFloat(); });
+setTimeout(() => { setupCV(); setupInkaFloat(); }, 300);
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────────────────────
+const observer = new IntersectionObserver(
+  entries => entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // Animate skill bars
+      e.target.querySelectorAll && e.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+        const w = parseFloat(bar.style.getPropertyValue('--w'));
+        bar.style.transform = `scaleX(${w})`;
+        bar.classList.add('animated');
+      });
+    }
+  }),
+  { threshold: 0.12 }
+);
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Also observe skill cards individually
+document.querySelectorAll('.skill-card').forEach(card => observer.observe(card));
+
+// ── MOBILE NAV ────────────────────────────────────────────────────────────────
+const navToggle = document.getElementById('nav-toggle');
+navToggle.addEventListener('click', () => navbar.classList.toggle('open'));
+document.querySelectorAll('nav a').forEach(a =>
+  a.addEventListener('click', () => navbar.classList.remove('open'))
+);
+</script>
+
+</body>
+</html>
