@@ -509,6 +509,10 @@
       transition: none !important;
     }
 
+    .inka-mobile-clone {
+      transition: none !important;
+    }
+
     /* Connector */
     .cv-card::after {
       content: '';
@@ -1743,14 +1747,40 @@ function setupInkaFloat() {
   const sd = window.scrollDist || 0;
   if (!inkaCard || !lastCard || !sd) return;
 
-  if (!document.getElementById('inka-card-ghost')) {
-    const ghost = inkaCard.cloneNode(true);
-    ghost.id = 'inka-card-ghost';
-    ghost.classList.add('inka-ghost');
+  // Cleanup fra evt. tidligere setup (resize)
+  const oldGhost = document.getElementById('inka-card-ghost');
+  if (oldGhost) oldGhost.remove();
+  const oldClone = document.getElementById('inka-card-mobile-clone');
+  if (oldClone) oldClone.remove();
+  inkaCard.style.transform = '';
+  inkaCard.style.zIndex = '';
+  inkaCard.style.borderColor = '';
+  inkaCard.style.boxShadow = '';
+  lastCard.style.transform = '';
+
+  const isMobile = window.innerWidth <= 780;
+
+  if (isMobile) {
+    // Klon overlapper det sidste kort vandret (samme scroll-position, forskellig vertikal)
+    const mobileClone = inkaCard.cloneNode(true);
+    mobileClone.id = 'inka-card-mobile-clone';
+    mobileClone.classList.add('inka-mobile-clone');
     const negMargin = -(inkaCard.offsetWidth + parseFloat(getComputedStyle(inkaCard).marginRight));
-    ghost.style.marginRight = negMargin + 'px';
-    inkaCard.parentNode.insertBefore(ghost, inkaCard);
+    mobileClone.style.marginRight = negMargin + 'px';
+    mobileClone.style.transform = 'translateY(-185px)';
+    lastCard.style.transform = 'translateY(185px)';
+    lastCard.parentNode.insertBefore(mobileClone, lastCard);
+    window.inkaFloatData = null;
+    return;
   }
+
+  // Desktop: ghost-kopi holder pladsen
+  const ghost = inkaCard.cloneNode(true);
+  ghost.id = 'inka-card-ghost';
+  ghost.classList.add('inka-ghost');
+  const negMargin = -(inkaCard.offsetWidth + parseFloat(getComputedStyle(inkaCard).marginRight));
+  ghost.style.marginRight = negMargin + 'px';
+  inkaCard.parentNode.insertBefore(ghost, inkaCard);
 
   window.inkaFloatData = {
     startProgress: Math.max(0, (inkaCard.offsetLeft - Math.min(window.innerWidth, 1600) * 0.55) / sd),
@@ -1780,27 +1810,25 @@ window.addEventListener('scroll', () => {
   track.style.transform = `translateX(${-progress * scrollDist}px)`;
   progressBar.style.width = (progress * 100) + '%';
 
-  // Inka float animation
+  // Inka float animation – kun desktop
   const inkaCard = document.getElementById('inka-card');
-  if (inkaCard && window.inkaFloatData) {
+  const lastCard = document.querySelector('[data-screen-label="CV 2026"]');
+  if (window.innerWidth <= 780) {
+    if (inkaCard) { inkaCard.style.transform = ''; inkaCard.style.zIndex = ''; }
+    if (lastCard) lastCard.style.transform = '';
+  } else if (inkaCard && window.inkaFloatData) {
     const { startProgress, deltaX } = window.inkaFloatData;
-    const raw = (progress - startProgress) / (1 - startProgress);
-    const t   = Math.max(0, Math.min(1, raw));
+    const raw  = (progress - startProgress) / (1 - startProgress);
+    const t    = Math.max(0, Math.min(1, raw));
     const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
     const tx   = ease * deltaX;
     const ty   = -75 - ease * 80;
-    inkaCard.style.transform  = `translateX(${tx}px) translateY(${ty}px)`;
-    inkaCard.style.zIndex     = t > 0.01 ? '20' : '';
-    inkaCard.style.borderColor = t > 0.01
-      ? `rgba(200,151,58,${0.3 + ease * 0.5})`  : '';
-    inkaCard.style.boxShadow  = t > 0.01
+    inkaCard.style.transform   = `translateX(${tx}px) translateY(${ty}px)`;
+    inkaCard.style.zIndex      = t > 0.01 ? '20' : '';
+    inkaCard.style.borderColor = t > 0.01 ? `rgba(200,151,58,${0.3 + ease * 0.5})` : '';
+    inkaCard.style.boxShadow   = t > 0.01
       ? `0 0 50px rgba(200,151,58,${ease*0.35}), 0 24px 60px rgba(0,0,0,.45)` : '';
-
-    // Mirror: last card drifts down symmetrically
-    const lastCard = document.querySelector('[data-screen-label="CV 2026"]');
-    if (lastCard) {
-      lastCard.style.transform = `translateY(${75 + ease * 80}px)`;
-    }
+    if (lastCard) lastCard.style.transform = `translateY(${75 + ease * 80}px)`;
   }
 });
 
